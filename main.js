@@ -93,8 +93,8 @@ const showProductPage = (product) => {
                 class="item-img"
             >
             <div class="wrapper-items">
-                <h3 class="item-title">${product.title}</h3>
-                <div class=item__block">
+                <h3 class="product-page__item-title">${product.title}</h3>
+                <div class="item__block">
                     <h3 class="item__description-title">Description</h3>
                     <p>${product.description}</p>
                 </div>
@@ -107,9 +107,9 @@ const showProductPage = (product) => {
                         <span>${product.warrantyInformation}</span>
                     </div>
                 </div>
-                <button class="item-buy-btn">Buy</button>
+                <button class="item-buy-btn right">Buy</button>
             </div>
-            <button class="item-back-btn">Back</button>
+            <button class="item-back-btn">X</button>
         `)
 
 
