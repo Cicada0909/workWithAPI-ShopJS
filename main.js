@@ -18,6 +18,12 @@ const getCategories = async () => {
     }
 }
 
+const goBackToItemList = () => {
+    itemList.classList.remove("hide");
+    productPage.classList.add("hide");
+    productPage.innerHTML = "";
+};
+
 const getAllproducts = async (limit = 9, skip = 0) => {
     try {
         const res = await fetch(`${SERVER_URL}/products?limit=${limit}&skip=${skip}`)
@@ -89,15 +95,20 @@ const showProductPage = (product) => {
                 <button class="item-buy-btn">Buy</button>
                 <button class="item-back-btn">Back</button>
         `)
-        const backButton = productPage.querySelector(".item-back-btn");
-    backButton.addEventListener("click", () => {
-        // Показываем список товаров и скрываем страницу продукта
-        itemList.classList.remove("hide");
-        productPage.classList.add("hide");
 
-        // Очищаем страницу продукта
-        productPage.innerHTML = "";
+        
+    const backButton = productPage.querySelector(".item-back-btn");
+    backButton.addEventListener("click", () => {
+        goBackToItemList();
     });
+    const handleOutsideClick = (e) => {
+        if (!productPage.contains(e.target)) {
+            goBackToItemList();
+            document.removeEventListener("click", handleOutsideClick);
+        }
+    };
+    document.addEventListener("click", handleOutsideClick);
+
 }
 
 
