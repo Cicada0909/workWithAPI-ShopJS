@@ -83,20 +83,36 @@ const insertProductsCards = (products) => {
 const showProductPage = (product) => {
     itemList.classList.add("hide");
     productPage.classList.remove("hide");
+    console.log(product);
+    
 
     productPage.insertAdjacentHTML("beforeend", `
-        <img 
-                    src="${product.images[0]}"
-                    alt="${product.title}"
-                    class="item-img"
-                >
-                <span class="item-title">${product.title}</span>
-                <span class="item-rate">${product.rating}</span>
+            <img 
+                src="${product.images[0]}"
+                alt="${product.title}"
+                class="item-img"
+            >
+            <div class="wrapper-items">
+                <h3 class="item-title">${product.title}</h3>
+                <div class=item__block">
+                    <h3 class="item__description-title">Description</h3>
+                    <p>${product.description}</p>
+                </div>
+                <div class="item__block">
+                    <h3 class="item__info-title">Other</h3>
+                    <div class="item__block-info">
+                        <span>rating: ${product.rating}</span>
+                        <span>brand: ${product.brand}</span>
+                        <span>price: ${product.price}$</span>
+                        <span>${product.warrantyInformation}</span>
+                    </div>
+                </div>
                 <button class="item-buy-btn">Buy</button>
-                <button class="item-back-btn">Back</button>
+            </div>
+            <button class="item-back-btn">Back</button>
         `)
 
-        
+
     const backButton = productPage.querySelector(".item-back-btn");
     backButton.addEventListener("click", () => {
         goBackToItemList();

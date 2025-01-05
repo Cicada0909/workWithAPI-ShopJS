@@ -150,3 +150,29 @@ h1 {
 .hide {
     display: none;
 }
+
+.product-page {
+    max-width: 1240px;
+    margin: 0 auto;
+    display: flex;
+    border: 1px solid black;
+    border-radius: 15px;
+}
+
+.wrapper-items {
+    display: flex;
+    flex-direction: column;
+    
+    justify-content: space-around;
+    padding: 30px;
+}
+
+.item-img {
+    max-width: 600px;
+}
+
+.item-back-btn {
+    width: 25px;
+    height: 25px;
+    border: 2px solid black;
+}
