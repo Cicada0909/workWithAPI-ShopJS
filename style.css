@@ -145,3 +145,7 @@ h1 {
     display: flex;
     gap: 20px;
 }
+
+.hide {
+    display: none;
+}

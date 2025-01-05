@@ -4,6 +4,8 @@ const categoriesList = document.querySelector(".categories");
 
 const itemList = document.querySelector(".items");
 
+const productPage = document.querySelector(".product-page");
+
 const getCategories = async () => {
     try {
     const res = await fetch(`${SERVER_URL}/products/categories`);
@@ -13,6 +15,18 @@ const getCategories = async () => {
     return data;
     } catch (error) {
         console.log(error);
+    }
+}
+
+const getAllproducts = async (limit = 9, skip = 0) => {
+    try {
+        const res = await fetch(`${SERVER_URL}/products?limit=${limit}&skip=${skip}`)
+
+        const data = await res.json();
+
+        return data;
+    } catch (e) {
+        console.log(e);
     }
 }
 
@@ -28,10 +42,26 @@ const getProductsByCategoryName = async (categoryName) => {
     }
 }
 
+const getProductById = async (productId) => {
+    try {
+        const res = await fetch(`${SERVER_URL}/products/${productId}`);
+
+        const data = await res.json();
+        
+
+        return data;
+
+    } catch (e) {
+
+    }
+}
+
 const insertProductsCards = (products) => {
-    products.products.forEach((product) => {
+    itemList.classList.remove("hide");
+    productPage.classList.add("hide");
+    products.forEach((product) => {
         itemList.insertAdjacentHTML("beforeend", `
-            <div class="item">
+            <div class="item" data-product-id=${product.id}>
                 <img src="${product.thumbnail}">
                 <div class="item__info">
                     <span class="item-title">${product.title}</span>
@@ -42,6 +72,32 @@ const insertProductsCards = (products) => {
                 </div>
             </div>`)
     })
+}
+
+const showProductPage = (product) => {
+    itemList.classList.add("hide");
+    productPage.classList.remove("hide");
+
+    productPage.insertAdjacentHTML("beforeend", `
+        <img 
+                    src="${product.images[0]}"
+                    alt="${product.title}"
+                    class="item-img"
+                >
+                <span class="item-title">${product.title}</span>
+                <span class="item-rate">${product.rating}</span>
+                <button class="item-buy-btn">Buy</button>
+                <button class="item-back-btn">Back</button>
+        `)
+        const backButton = productPage.querySelector(".item-back-btn");
+    backButton.addEventListener("click", () => {
+        // Показываем список товаров и скрываем страницу продукта
+        itemList.classList.remove("hide");
+        productPage.classList.add("hide");
+
+        // Очищаем страницу продукта
+        productPage.innerHTML = "";
+    });
 }
 
 
@@ -62,25 +118,38 @@ const handleSelectCategory = async (e) => {
 
         const categoryName = target.dataset.category;
         const products = await getProductsByCategoryName(categoryName);
-        insertProductsCards(products);
+        insertProductsCards(products.products);
+    }
+}
+
+const handleSelectProductCard = async (e) => {
+    const itemElement = e.target.closest(".item");
+
+    productPage.innerHTML = "";
+
+    if (itemElement) {
+        const productId = itemElement.dataset.productId;
+        const product = await getProductById(productId);
+        showProductPage(product);
     }
 }
 
 const init = async () => {
     const categories = await getCategories();
 
+    const allproducts = await getAllproducts();
+
     categories.forEach((category) => {
         categoriesList.insertAdjacentHTML("beforeend", `<li class="categories-item" data-category=${category.slug}>${category.name}</li>`)
     })
 
-    if (categories.length > 0) {
-        const firstCategory = categories[0].slug;
-        const products = await getProductsByCategoryName(firstCategory);
-        insertProductsCards(products);
-    }
+    insertProductsCards(allproducts.products);
+
 }
 
 categoriesList.addEventListener("click", handleSelectCategory)
+
+itemList.addEventListener("click", handleSelectProductCard)
 
 
 document.addEventListener("DOMContentLoaded", () => {
