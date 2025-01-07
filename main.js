@@ -6,6 +6,20 @@ const itemList = document.querySelector(".items");
 
 const productPage = document.querySelector(".product-page");
 
+const cartBtn = document.querySelector(".cart-btn");
+
+const cartPage = document.querySelector(".cart-page");
+
+const cartPageItems = document.querySelector(".cart-page__items");
+
+const cartPageHeader = document.querySelector(".cart-page__header");
+
+const modalWindow = document.querySelector(".modal-window");
+
+
+
+
+
 const getCategories = async () => {
     try {
     const res = await fetch(`${SERVER_URL}/products/categories`);
@@ -62,11 +76,35 @@ const getProductById = async (productId) => {
     }
 }
 
-const insertProductsCards = (products) => {
+const insertProductsCards = async (products) => {
+    itemList.innerHTML = "";
+
     itemList.classList.remove("hide");
     productPage.classList.add("hide");
+    cartPage.classList.add("hide");
     products.forEach((product) => {
         itemList.insertAdjacentHTML("beforeend", `
+            <div class="item" data-product-id=${product.id}>
+                <img src="${product.thumbnail}">
+                <div class="item__info">
+                    <span class="item-title">${product.title}</span>
+                    <button class="btn-flip" 
+                        data-front="${product.price}$" 
+                        data-back="Buy">
+                    </button>
+                </div>
+            </div>`)
+    })
+}
+
+const insertCartCards = async (products) => {
+    cartPageItems.innerHTML = "";
+
+    cartPage.classList.remove("hide");
+    productPage.classList.add("hide");
+    itemList.classList.add("hide");
+    products.forEach((product) => {
+        cartPageItems.insertAdjacentHTML("beforeend", `
             <div class="item" data-product-id=${product.id}>
                 <img src="${product.thumbnail}">
                 <div class="item__info">
@@ -83,6 +121,7 @@ const insertProductsCards = (products) => {
 const showProductPage = (product) => {
     itemList.classList.add("hide");
     productPage.classList.remove("hide");
+    cartPage.classList.add("hide");
     console.log(product);
     
 
@@ -127,6 +166,18 @@ const showProductPage = (product) => {
 
 }
 
+const addToCart = (product) => {
+    const cart = JSON.parse(localStorage.getItem("cart"));
+
+    if (cart) {
+        cart.push(product);
+        localStorage.setItem("cart", JSON.stringify(cart));
+        console.log(cart);
+    } else {
+        localStorage.setItem("cart", JSON.stringify([product]));
+    }
+}
+
 
 const handleSelectCategory = async (e) => {
     const target = e.target;
@@ -151,13 +202,27 @@ const handleSelectCategory = async (e) => {
 
 const handleSelectProductCard = async (e) => {
     const itemElement = e.target.closest(".item");
+    const buyBtn = e.target.closest(".btn-flip");
 
-    productPage.innerHTML = "";
+    if (!itemElement) {
+        return
+    }
 
-    if (itemElement) {
-        const productId = itemElement.dataset.productId;
-        const product = await getProductById(productId);
+    const productId = itemElement.dataset.productId;
+    const product = await getProductById(productId);
+
+    if (!buyBtn) {
         showProductPage(product);
+    } else {
+        addToCart(product)
+        modalWindow.style.opacity = "1";
+        modalWindow.style.top = "95%"
+        setTimeout(() => {
+            modalWindow.style.opacity = "0";
+            modalWindow.style.top = "103%"
+        }, 1000)
+        
+        
     }
 }
 
@@ -165,6 +230,7 @@ const init = async () => {
     const categories = await getCategories();
 
     const allproducts = await getAllproducts();
+    
 
     categories.forEach((category) => {
         categoriesList.insertAdjacentHTML("beforeend", `<li class="categories-item" data-category=${category.slug}>${category.name}</li>`)
@@ -178,7 +244,56 @@ categoriesList.addEventListener("click", handleSelectCategory)
 
 itemList.addEventListener("click", handleSelectProductCard)
 
+cartBtn.addEventListener("click", () => {
+    const cart = JSON.parse(localStorage.getItem("cart"));
+
+    if (cart) {
+        insertCartCards(cart);
+
+        const clearCartBtn = document.querySelector(".clear-cart-btn");
+
+        if (!clearCartBtn) {
+            cartPageHeader.insertAdjacentHTML("afterbegin", `<button class="clear-cart-btn">Clear Cart</button>`);
+            cartPageHeader.insertAdjacentHTML("afterbegin", `<button class="back-cart-btn">Back</button>`);
+
+            const clearCartBtn = document.querySelector(".clear-cart-btn");
+            const backCartBtn = document.querySelector(".back-cart-btn");
+
+            clearCartBtn.addEventListener("click", () => {
+                cartPageItems.innerHTML = `<p class="cart-page__message">Корзина пуста</p>`
+                localStorage.removeItem("cart");
+            
+            })
+            backCartBtn.addEventListener("click", () => {
+                cartPage.classList.add("hide");
+                productPage.classList.add("hide");
+                itemList.classList.remove("hide");
+            })
+        }
+    }
+})
+
+
 
 document.addEventListener("DOMContentLoaded", () => {
     init();
 })
+
+// const arr = [1, 2, 3];
+
+// const data = {
+//     value: "Test",
+//     items: ["q", "b", "a"],
+// }
+
+// localStorage.setItem("myKey", JSON.stringify(data));
+
+// const localStorageData = localStorage.getItem("myKey");
+
+// const localStorageData = localStorage.getItem("userData")
+
+// JSON.parse(localStorageData);
+
+// console.log(localStorageData);
+
+
