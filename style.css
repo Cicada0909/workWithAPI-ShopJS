@@ -264,7 +264,7 @@ h1 {
     width: 350px;
     height: 50px;
     position: fixed;
-    left: 89.6%;
+    left: 88%;
     top: 103%;
     transform: translate(-50%, -50%);
     transition: 0.5s;
@@ -280,6 +280,15 @@ h1 {
     font-family: Montserrat;
     font-size: 18px;
     color: #fff;
+}
+
+.found-products {
+    max-width: 1240px;
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
 }
 
 .hide {

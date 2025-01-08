@@ -16,7 +16,39 @@ const cartPageHeader = document.querySelector(".cart-page__header");
 
 const modalWindow = document.querySelector(".modal-window");
 
+const btnSearch = document.querySelector(".btn-search");
 
+const searchInp = document.querySelector("#search-inp");
+
+const headerForm = document.querySelector(".header__form");
+
+const foundProducts = document.querySelector(".found-products");
+
+// event.preventDefault();
+
+const getItem = async (product) => {
+    try {
+        const res = await fetch(`${SERVER_URL}/products/search?q=${product}`);
+        const data = await res.json();
+        return data
+    } catch (e) {
+
+    }
+}
+
+const searchItem = async (event) => {
+    event.preventDefault()
+    const inputValue = searchInp.value;
+    const product = await getItem(inputValue);
+    console.log(product.products);
+    insertSearchCards(product.products)
+    
+    
+    
+
+}
+
+headerForm.addEventListener("submit", searchItem);
 
 
 
@@ -82,6 +114,7 @@ const insertProductsCards = async (products) => {
     itemList.classList.remove("hide");
     productPage.classList.add("hide");
     cartPage.classList.add("hide");
+    foundProducts.classList.add("hide");
     products.forEach((product) => {
         itemList.insertAdjacentHTML("beforeend", `
             <div class="item" data-product-id=${product.id}>
@@ -103,8 +136,31 @@ const insertCartCards = async (products) => {
     cartPage.classList.remove("hide");
     productPage.classList.add("hide");
     itemList.classList.add("hide");
+    foundProducts.classList.add("hide");
     products.forEach((product) => {
         cartPageItems.insertAdjacentHTML("beforeend", `
+            <div class="item" data-product-id=${product.id}>
+                <img src="${product.thumbnail}">
+                <div class="item__info">
+                    <span class="item-title">${product.title}</span>
+                    <button class="btn-flip" 
+                        data-front="${product.price}$" 
+                        data-back="Buy">
+                    </button>
+                </div>
+            </div>`)
+    })
+}
+
+const insertSearchCards = async (products) => {
+    foundProducts.innerHTML = "";
+
+    cartPage.classList.add("hide");
+    productPage.classList.add("hide");
+    itemList.classList.add("hide");
+    foundProducts.classList.remove("hide");
+    products.forEach((product) => {
+        foundProducts.insertAdjacentHTML("beforeend", `
             <div class="item" data-product-id=${product.id}>
                 <img src="${product.thumbnail}">
                 <div class="item__info">
@@ -122,8 +178,7 @@ const showProductPage = (product) => {
     itemList.classList.add("hide");
     productPage.classList.remove("hide");
     cartPage.classList.add("hide");
-    console.log(product);
-    
+    foundProducts.classList.add("hide");
 
     productPage.insertAdjacentHTML("beforeend", `
             <img 
