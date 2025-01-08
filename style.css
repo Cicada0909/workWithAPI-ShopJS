@@ -257,7 +257,7 @@ h1 {
 .cart-page__message {
     margin-top: 50px;
     font-size: 16px;
-    font-family: Montserrat;
+    color: #808080;
 }
 
 .modal-window {
@@ -279,6 +279,7 @@ h1 {
 .modal-text {
     font-family: Montserrat;
     font-size: 18px;
+    color: #fff;
 }
 
 .hide {
