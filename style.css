@@ -291,6 +291,22 @@ h1 {
     gap: 20px;
 }
 
+.pagination {
+    max-width: 1440px;
+    width: 100%;
+    margin: auto;
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+}
+
+.pagination-btn {
+    width: 40px;
+    padding: 10px;
+    border: 1px solid black;
+    align-items: center;
+}
+
 .hide {
     display: none;
 }

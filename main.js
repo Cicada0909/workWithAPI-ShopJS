@@ -1,5 +1,7 @@
 const SERVER_URL = "https://dummyjson.com";
 
+const PRODUCTS_LIMIT = 9;
+
 const categoriesList = document.querySelector(".categories");
 
 const itemList = document.querySelector(".items");
@@ -24,6 +26,8 @@ const headerForm = document.querySelector(".header__form");
 
 const foundProducts = document.querySelector(".found-products");
 
+const pagination = document.querySelector(".pagination");
+
 // event.preventDefault();
 
 const getItem = async (product) => {
@@ -42,10 +46,6 @@ const searchItem = async (event) => {
     const product = await getItem(inputValue);
     console.log(product.products);
     insertSearchCards(product.products)
-    
-    
-    
-
 }
 
 headerForm.addEventListener("submit", searchItem);
@@ -70,7 +70,7 @@ const goBackToItemList = () => {
     productPage.innerHTML = "";
 };
 
-const getAllproducts = async (limit = 9, skip = 0) => {
+const getAllproducts = async (limit = PRODUCTS_LIMIT, skip = 0) => {
     try {
         const res = await fetch(`${SERVER_URL}/products?limit=${limit}&skip=${skip}`)
 
@@ -82,9 +82,9 @@ const getAllproducts = async (limit = 9, skip = 0) => {
     }
 }
 
-const getProductsByCategoryName = async (categoryName) => {
+const getProductsByCategoryName = async (categoryName, limit = PRODUCTS_LIMIT, skip = 0) => {
     try {
-        const res = await fetch(`${SERVER_URL}/products/category/${categoryName}`);
+        const res = await fetch(`${SERVER_URL}/products/category/${categoryName}?limit=${limit}&skip=${skip}`);
 
         const data = await res.json();
         return data;
@@ -108,7 +108,7 @@ const getProductById = async (productId) => {
     }
 }
 
-const insertProductsCards = async (products) => {
+const insertProductsCards = (products) => {
     itemList.innerHTML = "";
 
     itemList.classList.remove("hide");
@@ -233,6 +233,19 @@ const addToCart = (product) => {
     }
 }
 
+const createPagination = (totalProducts, categories) => {
+    pagination.innerHTML = "";
+
+    const totalPages = Math.ceil(totalProducts / PRODUCTS_LIMIT);
+    
+    for (let i = 1; i <= totalPages; i++) {
+        pagination.insertAdjacentHTML("beforeend", `
+            <span class="pagination-btn" data-page-number="${i}" data-category="${categories}">${i}</span>`
+        );
+    }
+}
+
+
 
 const handleSelectCategory = async (e) => {
     const target = e.target;
@@ -252,6 +265,7 @@ const handleSelectCategory = async (e) => {
         const categoryName = target.dataset.category;
         const products = await getProductsByCategoryName(categoryName);
         insertProductsCards(products.products);
+        createPagination(products.total, categoryName);
     }
 }
 
@@ -278,6 +292,20 @@ const handleSelectProductCard = async (e) => {
         }, 1000)
         
         
+    }
+}
+
+const handlePageChange = async (e) => {
+    const target = e.target;
+
+    if (target.closest(".pagination-btn")) {
+        const pageNumber = Number(target.dataset.pageNumber);
+        console.log(pageNumber);
+        const categoryName = target.dataset.category;
+        const skip = (pageNumber - 1) * PRODUCTS_LIMIT;
+        const products = await getProductsByCategoryName(categoryName, PRODUCTS_LIMIT, skip);
+
+        insertProductsCards(products.products);
     }
 }
 
@@ -309,14 +337,20 @@ cartBtn.addEventListener("click", () => {
 
         if (!clearCartBtn) {
             cartPageHeader.insertAdjacentHTML("afterbegin", `<button class="clear-cart-btn">Clear Cart</button>`);
+            cartPageHeader.insertAdjacentHTML("afterbegin", `<button class="buy-cart-btn">buy</button>`);
             cartPageHeader.insertAdjacentHTML("afterbegin", `<button class="back-cart-btn">Back</button>`);
 
             const clearCartBtn = document.querySelector(".clear-cart-btn");
+            const buyCartBtn = document.querySelector(".buy-cart-btn");
             const backCartBtn = document.querySelector(".back-cart-btn");
 
             clearCartBtn.addEventListener("click", () => {
                 cartPageItems.innerHTML = `<p class="cart-page__message">Корзина пуста</p>`
                 localStorage.removeItem("cart");
+
+            buyCartBtn.addEventListener("click", () => {
+                
+            })
             
             })
             backCartBtn.addEventListener("click", () => {
@@ -326,7 +360,9 @@ cartBtn.addEventListener("click", () => {
             })
         }
     }
-})
+});
+
+pagination.addEventListener("click", handlePageChange);
 
 
 
