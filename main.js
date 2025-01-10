@@ -28,6 +28,12 @@ const foundProducts = document.querySelector(".found-products");
 
 const pagination = document.querySelector(".pagination");
 
+const modalWindowBuy = document.querySelector(".modal-window-buy");
+
+const modalWindowBuyBackBtn = document.querySelector(".modal-window-buy__back-btn");
+
+const modalWindowBuyBtnPackage = document.querySelector(".modal-window-buy__btn-package");
+
 // event.preventDefault();
 
 const getItem = async (product) => {
@@ -69,6 +75,10 @@ const goBackToItemList = () => {
     productPage.classList.add("hide");
     productPage.innerHTML = "";
 };
+
+const goBackToCart = () => {
+    modalWindowBuy.classList.add("hide");
+}
 
 const getAllproducts = async (limit = PRODUCTS_LIMIT, skip = 0) => {
     try {
@@ -347,22 +357,60 @@ cartBtn.addEventListener("click", () => {
             clearCartBtn.addEventListener("click", () => {
                 cartPageItems.innerHTML = `<p class="cart-page__message">Корзина пуста</p>`
                 localStorage.removeItem("cart");
+            })
 
             buyCartBtn.addEventListener("click", () => {
+                modalWindowBuy.classList.remove("hide");
+
+                const handleOutsideClickCart = (e) => {
+                    if (e.target === buyCartBtn) {
+                        return;
+                    }
+                
+                    if (!modalWindowBuy.contains(e.target)) {
+                        goBackToCart();
+                        document.removeEventListener("click", handleOutsideClickCart);
+                    }
+                };
+                document.addEventListener("click", handleOutsideClickCart);
+
                 
             })
+
+            modalWindowBuyBtnPackage.addEventListener("click", (event) => {
+                event.preventDefault()
+                const cartAllItems = Array.from(cartPageItems.children);
+                const itemsObj = {};
+
+                cartAllItems.forEach((item) => {
+                    const id = parseInt(item.dataset.productId);
+
+                    if (isNaN(id)) return;
+                    
+                    if (itemsObj[id]) {
+                        itemsObj[id].quantity +=1;
+                    } else {
+                        itemsObj[id] = {id, quantity: 1};
+                    }
+                    
+                })
+                
+                const itemsArray = Object.values(itemsObj);
+                console.log(itemsArray);
+            })
             
+            modalWindowBuyBackBtn.addEventListener("click", (event) => {
+                event.preventDefault()
+                goBackToCart();
             })
-            backCartBtn.addEventListener("click", () => {
-                cartPage.classList.add("hide");
-                productPage.classList.add("hide");
-                itemList.classList.remove("hide");
-            })
+
         }
     }
 });
 
 pagination.addEventListener("click", handlePageChange);
+
+
 
 
 
