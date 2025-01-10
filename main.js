@@ -396,7 +396,13 @@ cartBtn.addEventListener("click", () => {
                 })
                 
                 const itemsArray = Object.values(itemsObj);
-                console.log(itemsArray);
+                console.log("products:", itemsArray);
+                // const obj = {
+                //     products: itemsArray,
+                // }
+                // console.log(obj);
+                
+                
             })
             
             modalWindowBuyBackBtn.addEventListener("click", (event) => {
