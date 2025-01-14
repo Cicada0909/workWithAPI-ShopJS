@@ -401,24 +401,17 @@ cartBtn.addEventListener("click", () => {
                 //     products: itemsArray,
                 // }
                 // console.log(obj);
-                
-                
             })
             
             modalWindowBuyBackBtn.addEventListener("click", (event) => {
                 event.preventDefault()
                 goBackToCart();
             })
-
         }
     }
 });
 
 pagination.addEventListener("click", handlePageChange);
-
-
-
-
 
 document.addEventListener("DOMContentLoaded", () => {
     init();
