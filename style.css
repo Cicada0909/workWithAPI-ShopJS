@@ -293,6 +293,7 @@ h1 {
 }
 
 .pagination {
+    padding: 30px;
     max-width: 1440px;
     width: 100%;
     margin: auto;
@@ -305,7 +306,14 @@ h1 {
     width: 40px;
     padding: 10px;
     border: 1px solid black;
+    display: flex;
     align-items: center;
+    justify-content: center;
+    transition: .3s;
+}
+
+.pagination-btn:hover {
+    background-color: #808080;
 }
 
 .modal-window-buy {

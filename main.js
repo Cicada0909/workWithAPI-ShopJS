@@ -343,6 +343,8 @@ cartBtn.addEventListener("click", () => {
     if (cart) {
         insertCartCards(cart);
 
+        pagination.innerHTML = " ";
+
         const clearCartBtn = document.querySelector(".clear-cart-btn");
 
         if (!clearCartBtn) {
@@ -397,10 +399,8 @@ cartBtn.addEventListener("click", () => {
                 
                 const itemsArray = Object.values(itemsObj);
                 console.log("products:", itemsArray);
-                // const obj = {
-                //     products: itemsArray,
-                // }
-                // console.log(obj);
+                
+                sendCart(itemsArray);
             })
             
             modalWindowBuyBackBtn.addEventListener("click", (event) => {
@@ -410,6 +410,28 @@ cartBtn.addEventListener("click", () => {
         }
     }
 });
+
+const sendCart = async (cartItems) => {
+    try {
+        const response = await fetch(`${SERVER_URL}/carts/add`, {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                userId: 1,
+                products: cartItems,
+            }),
+        });
+        
+        
+        const data = await response.json();
+        alert(`Ваша корзина сформирована для оплаты, сумма к оплате составит: ${data.total}$`);
+        console.log(data);
+        cartPageItems.innerHTML = `<p class="cart-page__message">Корзина пуста</p>`
+    }
+    catch (error) {
+        alert('Не удалось отправить корзину.');
+    }
+}
 
 pagination.addEventListener("click", handlePageChange);
 
